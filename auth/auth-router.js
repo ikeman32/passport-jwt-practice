@@ -2,13 +2,14 @@ require('dotenv').config();
 const router = require("express").Router();
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken"); // installed this
+const SALT_ROUNDS = process.env.SALT_ROUNDS;
 
 const Users = require("../models/auth-model");
 
 // for endpoints beginning with /api/auth
 router.post("/register", (req, res) => {
   let user = req.body;
-  const hash = bcrypt.hashSync(user.password, 10); // 2 ^ n
+  const hash = bcrypt.hashSync(user.password, SALT_ROUNDS); // 2 ^ n
   user.password = hash;
 
   Users.add(user)
