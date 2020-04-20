@@ -1,24 +1,28 @@
 require('dotenv').config();
-const SALT_ROUNDS = process.env.SALT_ROUNDS;
+const {Strategy, ExtractJwt} = require('passport-jwt');
+
 const secret = process.env.JWT_SECRET;
-const bcrypt = require("bcryptjs");
 
-const passport = require('passport'),
-    localStrategy = require('passport-local').Strategy,
-    User = require('../models/auth-model'),
-    JWTstrategy = require('passport-jwt').Strategy,
-    ExtractJWT = require('passport-jwt').ExtractJwt;
+const User = require('../models/auth-model');
 
-passport.use(
-    'register',
-    new localStrategy(
-        {
-            usernameField: 'username',
-            passwordField: 'password',
-            session: false,
-        },
-        (username, password, done) =>{
-            
-        },//end (username, password, done) callback
-    ),//end new localStrategy
-);//end passport.use
+const opts = {
+  jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+  secretOrKey: secret
+};
+
+module.exports = passport => {
+  passport.use(
+      new Strategy(opts, (payload, done) => {
+           User.findById(payload.id)
+               .then(user => {
+                   if(user){
+                     return done(null, {
+                         id: user.id,
+                         username: user.username
+                     });
+                   }
+                   return done(null, false);
+                }).catch(err => console.error(err));
+            });
+         );
+   };
