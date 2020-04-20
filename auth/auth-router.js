@@ -4,7 +4,18 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken"); // installed this
 const SALT_ROUNDS = process.env.SALT_ROUNDS;
 
-const Users = require("../models/auth-model");
+/* passport usage
+
+const passport = require('passport');
+
+To protect an individual route
+router.method('/path', passport.authenticate('jwt', {session: false}), (req,res) => ... );
+
+To protect a group of routes
+app.use('/path', passport.authenticate('jwt', {session:false}),require('path/to/route/file'));
+*/
+
+const User = require("../models/auth-model");
 
 // for endpoints beginning with /api/auth
 router.post("/register", (req, res) => {
@@ -12,7 +23,7 @@ router.post("/register", (req, res) => {
   const hash = bcrypt.hashSync(user.password, SALT_ROUNDS); // 2 ^ n
   user.password = hash;
 
-  Users.add(user)
+  User.add(user)
     .then(saved => {
       res.status(201).json(saved);
     })
@@ -24,7 +35,7 @@ router.post("/register", (req, res) => {
 router.post("/login", (req, res) => {
   let { username, password } = req.body;
 
-  Users.findBy({ username })
+  User.findBy({ username })
     .first()
     .then(user => {
       if (user && bcrypt.compareSync(password, user.password)) {
