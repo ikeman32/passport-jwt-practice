@@ -2,7 +2,7 @@ require('dotenv').config();
 const router = require("express").Router();
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken"); // installed this
-const SALT_ROUNDS = process.env.SALT_ROUNDS;
+const SALT_ROUNDS = parseInt(process.env.SALT_ROUNDS);
 
 /* passport usage
 
