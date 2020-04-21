@@ -1,8 +1,10 @@
+require('dotenv').config();
 const express = require("express");
 const helmet = require("helmet");
 const cors = require("cors");
 const morgan = require(`morgan`);
 const passport = require('passport');
+const cookieSession = require('cookie-session');
 
 
 
@@ -27,11 +29,16 @@ server.set('view engine', 'ejs');
 server.use(require('cookie-parser')());
 server.use(require('body-parser').urlencoded({ extended: true }));
 server.use(require('express-session')({ secret: 'keyboard cat', resave: true, saveUninitialized: true }));
+server.use(cookieSession({
+  maxAge: 24 * 60 * 60 * 1000,
+  keys: process.env["COOKIE_KEY"]
+}))
 
 // Initialize Passport and restore authentication state, if any, from the
 // session.
 server.use(passport.initialize());
 server.use(passport.session());
+
 
 configureRoutes(server);
 
