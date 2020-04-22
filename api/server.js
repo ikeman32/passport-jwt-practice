@@ -1,6 +1,6 @@
 require('dotenv').config();
 const express = require("express");
-const cookiesession = require('cookie-session');
+const cookieSession = require('cookie-session');
 const helmet = require("helmet");
 const cors = require("cors");
 const morgan = require(`morgan`);
