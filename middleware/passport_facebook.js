@@ -1,7 +1,7 @@
-require('dotenv').config();
-const passport = require('passport');
-const FacebookStrategy = require('passport-facebook').Strategy;
-
+require("dotenv").config();
+const passport = require("passport");
+const FacebookStrategy = require("passport-facebook").Strategy;
+const User = require("../models/auth-model");
 
 passport.serializeUser((user, done) => {
   done(null, user.id);
@@ -30,15 +30,12 @@ passport.use(
           done(null, currentUser);
         } else {
           // if not, create user in our db
-          new User({
-            facebookId: profile.id,
-            username: profile.displayName,
-            thumbnail: profile._json.image.url,
-          })
-            .save()
-            .then((newUser) => {
-              console.log("created new user: ", newUser);
-              done(null, newUser);
+          User.add(user)
+            .then((saved) => {
+              res.status(201).json(saved);
+            })
+            .catch((error) => {
+              res.status(500).json(error);
             });
         }
       });
