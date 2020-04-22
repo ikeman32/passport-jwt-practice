@@ -11,17 +11,18 @@ router.get('/login',
     res.render('login');
   });
 
-router.get('/login/google',
-  passport.authenticate('google'));
+router.get("/logout", (req, res) => {
+  req.logout();
+  res.redirect("/");
+});
 
-router.get('/return', 
-  passport.authenticate('google', { failureRedirect: '/login' }),
-  function(req, res) {
-    res.redirect('/');
-  });
+router.get('/google', passport.authenticate('google', {
+  scope: ['profile']
+}));
 
-router.get('/profile',
-  require('connect-ensure-login').ensureLoggedIn(),
-  function(req, res){
-    res.render('profile', { user: req.user });
-  });
+router.get('/google/redirect', passport.authenticate('google'), (req, res) => {
+  // res.send(req.user);
+  res.redirect('/profile');
+});
+
+module.exports = router;
